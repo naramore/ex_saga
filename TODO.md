@@ -1,0 +1,98 @@
+# TODO
+
+- [ ] ExSaga
+    - [x] implement retry logic for stages
+    - [x] implement generic error handling for stages, to be called w/e a non-transaction handler is called
+    - [x] implement function hooks for stage to facilitate extensibility
+    - [x] implement events for the execution of stages / sagas
+    - [x] implement protocol for stepping that all stages / sagas can implement
+    - [x] implement the leaf node of the saga pattern, the stage (i.e. transaction + compensation)
+    - [x] implement multi-stepping w/ breakpoints from:
+        - [x] list of events
+        - [x] accumulator + event
+        - [x] stage result
+    - [x] implement retry waiting for mstep via external wait gen_server (so it doesn't wait naively, executing hooks count as waiting for example)
+    - [x] tests
+    - [ ] benchmarking
+    - [ ] implement asynchronous / parallel stage execution (with optional dependencies)
+    - [ ] implement dynamic asynchronous / parallel stage generation
+    - [ ] implement stage looping (in order to avoid allowing circular references)
+    - [x] implement serial / pipeline stage execution (i.e. the saga)
+    - [ ] composite stages must handle propagation of hook and retry state to and from their inner stages (add this to Stepable?)
+    - [x] re-evaluate the usefulness-to-added-complexity-ness of ExSaga.Stepable.re_step_from/3 function
+    - [ ] implement the Inspect protocol for all stages?
+    - [ ] integrate publishing with https://github.com/beam-telemetry/telemetry
+    - [ ] add input/output spec + get_example functions to Stepable protocol
+    - [ ] ExSaga.*Error
+    - [ ] change ExSaga.Utils.get_local_metadata/1 -> macro in order to auto-import env
+    - [ ] refactor tests to not use generated functions (e.g. transaction, compensation)
+    - [ ] mstep/3, opts, breakpoint -> breakpoints
+    - [ ] step / mstep async? breakpoints? resuming? (maybe, add mstep to Stepable protocol and use default mstep for stage, feedback, saga, and mstep_async for aysnc and mapper stages... *OR* AsyncStage.Supervisor + AsyncStage.Server w/ mstep/4, step/4, pause/1)
+    - [x] change `[:starting, :stage, _] -> [:starting, _]`
+    - [x] encapsulate all the hook, retry, and error handler specific state on `ExSaga.Stage` into its own struct
+    - [ ] re-name `ExSaga.DryRun` to Executor or some such...
+    - [ ] refactor `ExSaga.Event.context` to be a map instead of term...
+    - [ ] refactor `ExSaga.Stepable.step/3` return to be `{:continue, event, stepable} | {:done, {:ok, effects} | {:error, reason, effects_so_far}, stepable}`?
+    - [ ] change `ExSaga.*.compensation(reason, effect, effects_so_far) -> (event, effects_so_far)`
+    - [x] refactor out the hook, retry, error handler and other default step implementations into a reuseable function
+    - [ ] move *specific* event generators into a new module (e.g. `ExSaga.EventGenerators`)
+    - [ ] add stage name to event.name for `ExSaga.Saga`
+- [ ] ExSaga.UI
+    - [ ] worker pool for stage executions
+    - [ ] Phoenix + Absinthe + Elm?
+    - [ ] https://camunda.com/products/optimize/
+    - [ ] GraphQL API
+        - [ ] queries
+            - [ ] allStages(StagesFilter, StagesOrderBy, Pagination) :: StagesConnection
+            - [ ] allWork(WorkFilter, WorkOrderBy, Pagination) :: WorkConnection
+            - [ ] allWorkers(WorkersFilter, WorkersOrderBy, Pagination) :: WorkersConnection
+            - [ ] stage(ID) :: Stage
+            - [ ] work(ID) :: Work
+            - [ ] worker(ID) :: Worker
+            - [ ] node(ID) :: Node
+        - [ ] mutations
+            - [ ] createStage(...) :: Stage
+            - [ ] deleteStage(ID) :: Stage
+            - [ ] createWork(...) :: Work
+            - [ ] updateWork(ID, ...) :: Work
+            - [ ] updateOrCreateWork(ID, ...) :: Work
+            - [ ] deleteWork(ID) :: Work
+            - [ ] pauseWork(ID) :: Work
+            - [ ] resumeWork(ID) :: Work
+            - [ ] stepWork(...) :: Work
+            - [ ] multiStepWork(...) :: Work
+            - [ ] addWorkers(...) :: [Worker]
+            - [ ] updateWorkers([ID], ...) :: Worker
+            - [ ] removeWorkers([ID], hard?: boolean) :: Worker
+        - [ ] subscriptions
+            - [ ] Stage(StageFilter) :: StageSubscriptionPayload
+            - [ ] Work(WorkFilter) :: WorkSubscriptionPayload
+            - [ ] Worker(WorkerFilter) :: WorkerSubscriptionPayload
+    - [ ] Pages
+        - [ ] index map, reduce, filter, groupby, sort
+            - [ ] default reducer functions (e.g. count, sum)
+            - [ ] custom reducers via registration as reducer
+            - [ ] custom reducers via dynamic loading
+        - [ ] stage index view
+        - [ ] saga/stage/async_stage/mapper_stage/feedback_stage view
+        - [ ] work index view
+        - [ ] work view w/ pause/resume stepping
+        - [ ] worker index view
+        - [ ] worker view
+    - [ ] prometheus metrics
+    - [ ] investigate 'safe' dynamic loading / unloading of *.exs
+    - [ ] persistant storage?
+    - [ ] hooks (e.g. metrics and persistence)
+    - [ ] [Connection Draining](https://medium.com/@derek.kraan2/implementing-connection-draining-for-phoenix-or-any-library-that-uses-ranch-8e640f3bd4cf)
+- [ ] property-based testing
+    - [ ] clojure's test.check
+    - [ ] Erlang PropEr / Elixir PropCheck
+    - [ ] Elixir StreamData (especially Enumerable protocol for generators)
+    - [ ] EQC's PULSE
+- [ ] data specs / schemas / contracts (i.e. clojure.spec)
+    - [ ] specifies structure
+    - [ ] validates
+    - [ ] destructures
+    - [ ] generates (i.e. integrates with property-based testing: PropCheck, StreamData)
+    - [ ] fully qualified atom as sigil? (e.g. `~a[foo]` -> :"Elixir.Module.Path.foo" or {module, atom})
+    - [ ] dialyzer integration

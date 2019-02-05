@@ -1,0 +1,37 @@
+sudo: false
+language: elixir
+cache:
+  directories:
+    - deps
+    - _build/dev
+    - _build/test
+elixir:
+  - 1.7.4
+otp_release:
+  - 21.1.4
+env:
+  global:
+    - MIX_ENV=test
+jobs:
+  include:
+    - stage: build
+      script: mix do deps.get, compile
+    - stage: test
+      name: formatter
+      script: mix format --check-formatted --dry-run
+    - name: dialyzer
+      script: mix dialyzer --halt-exit-status
+    - name: exunit
+      if: branch != master
+      script: mix test --trace --stale
+    - name: exunit
+      if: branch = master
+      script: mix test --trace
+    - stage: report
+      script:
+        - mix inch.report
+        - mix coveralls.travis
+stages:
+  - build
+  - test
+  - report
