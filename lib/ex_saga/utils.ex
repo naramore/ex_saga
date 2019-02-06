@@ -5,9 +5,7 @@ defmodule ExSaga.Utils do
   import Kernel, except: [get_in: 2]
   alias ExSaga.Stage
 
-  @doc """
-  """
-  @spec get_stacktrace() :: Exception.stacktrace()
+  @doc false
   defmacro get_stacktrace() do
     if Version.match?(System.version(), "~> 1.7") do
       quote do: __STACKTRACE__
