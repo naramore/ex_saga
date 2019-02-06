@@ -54,7 +54,6 @@ defmodule ExSaga.MixProject do
 
       # Test dependencies
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
-      {:propcheck, "~> 1.1", only: [:dev, :test]},
       {:stream_data, "~> 0.4", only: [:dev, :test]},
       {:benchee, "~> 0.13", only: :test},
       {:excoveralls, "~> 0.10", only: [:dev, :test]},

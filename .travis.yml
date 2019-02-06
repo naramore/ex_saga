@@ -3,7 +3,6 @@ language: elixir
 cache:
   directories:
     - deps
-    - _build/dev
     - _build/test
 elixir:
   - 1.7.4
@@ -28,9 +27,13 @@ jobs:
       if: branch = master
       script: mix test --trace
     - stage: report
+      name: coveralls.io
       script:
-        - mix inch.report
         - mix coveralls.travis
+    - name: inch-ci
+      script:
+        - MIX_ENV=docs mix deps.get
+        - MIX_ENV=docs mix inch.report
 stages:
   - build
   - test

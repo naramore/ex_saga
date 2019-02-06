@@ -1,5 +1,7 @@
 # ExSaga
 
+[![Build Status](https://travis-ci.com/naramore/ex_saga.svg?branch=master)](https://travis-ci.com/naramore/ex_saga)
+
 **TODO: Add description**
 
 ## Installation
