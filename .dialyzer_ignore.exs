@@ -1,2 +1,15 @@
 [
+  {":0:unknown_function Function ExSaga.Stepable.Atom.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.BitString.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.Float.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.Function.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.Integer.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.List.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.Map.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.PID.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.Port.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.Reference.__impl__/1 does not exist.", :unknown_function, 0},
+  {":0:unknown_function Function ExSaga.Stepable.Tuple.__impl__/1 does not exist.", :unknown_function, 0},
+  {"lib/ex_saga/async_stage/supervisor.ex", :no_return, 11},
+  {"lib/ex_saga/async_stage/supervisor.ex", :call, 11},
 ]

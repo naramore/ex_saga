@@ -28,14 +28,15 @@ defmodule ExSaga.Hook do
 
   @typedoc """
   """
-  @type hook_context :: {Event.t(), Hook.hook_result()} | Event.t()
+  @type hook_context :: {Event.t(), hook_result()} | Event.t()
 
   @typedoc """
   """
   @type accumulator :: %{
-          hooks: [t],
-          hooks_left: [t],
-          effects_so_far: Stage.effects()
+          :hooks => [t],
+          :hooks_left => [t],
+          :effects_so_far => Stage.effects(),
+          optional(term) => term
         }
 
   defstruct name: nil,

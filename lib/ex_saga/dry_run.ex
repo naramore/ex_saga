@@ -54,7 +54,7 @@ defmodule ExSaga.DryRun do
 
   @doc """
   """
-  @spec execute(Utils.f(), args :: [term], execution_opts) :: {:error, execute_error_reason} | result :: term
+  @spec execute(f(), args :: [term], execution_opts) :: {:error, execute_error_reason} | result :: term
   def maybe_execute(fun, args, opts \\ []) do
     if Keyword.get(opts, :dry_run?, false) do
       find_dry_run_result(opts)

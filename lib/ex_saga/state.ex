@@ -23,7 +23,7 @@ defmodule ExSaga.State do
           hooks: [Hook.t() | {Hook.t(), Hook.opts()}],
           hooks_left: [Hook.t()],
           retry_updates_left: [{Stage.full_name(), module}],
-          update: Retry.retry_result(),
+          update: Retry.retry_result() | nil,
           effects_so_far: Stage.effects(),
           abort?: boolean,
           reason: term,

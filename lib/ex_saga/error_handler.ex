@@ -7,11 +7,12 @@ defmodule ExSaga.ErrorHandler do
   @typedoc """
   """
   @type accumulator :: %{
-          hooks: [Hook.t()],
-          hooks_left: [Hook.t()],
-          on_error: module,
-          effects_so_far: Stage.effects(),
-          reason: term
+          :hooks => [Hook.t()],
+          :hooks_left => [Hook.t()],
+          :on_error => module,
+          :effects_so_far => Stage.effects(),
+          :reason => term,
+          optional(term) => term
         }
 
   @typedoc """

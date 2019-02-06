@@ -23,8 +23,8 @@ defmodule ExSaga.RetryWithExpoentialBackoff do
   @type parsed_retry :: {pos_integer | nil, pos_integer | nil, pos_integer, boolean}
 
   @impl ExSaga.Retry
-  def init(_) do
-    {:ok, 1}
+  def init(opts) do
+    {:ok, 1, opts}
   end
 
   @impl ExSaga.Retry

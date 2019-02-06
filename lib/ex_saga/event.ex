@@ -21,7 +21,7 @@ defmodule ExSaga.Event do
           # timestamp: [{Stage.full_name, non_neg_integer, {Node.t, DateTime.t}}, ...],
           timestamp: {Node.t(), DateTime.t()},
           stage_name: Stage.full_name(),
-          name: name,
+          name: name | nil,
           context: term,
           metadata: Keyword.t(),
           stage: module

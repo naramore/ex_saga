@@ -9,7 +9,7 @@ defmodule ExSaga.WaitServer do
 
   @doc """
   """
-  @spec start_link(GenServer.opts()) :: GenServer.on_start()
+  @spec start_link(GenServer.options()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, opts)
   end
@@ -71,7 +71,7 @@ defmodule ExSaga.WaitServer do
   end
 
   @doc false
-  @spec get_wait(reference, Stage.full_name(), DateTime.t()) :: non_neg_integer | nil
+  @spec get_wait(atom | :ets.tid, Stage.full_name(), DateTime.t()) :: non_neg_integer | nil
   defp get_wait(table, id, now \\ DateTime.utc_now()) do
     case :ets.lookup(table, id) do
       [{^id, {time, unit}, %DateTime{} = then} | _] ->

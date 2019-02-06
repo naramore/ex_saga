@@ -3,7 +3,7 @@ defmodule ExSaga.AsyncStage.Server do
   """
 
   use GenServer
-  alias ExSaga.{Event, Step, Stepable}
+  alias ExSaga.{Event, Stage, Step, Stepable}
   alias ExSaga.AsyncStage.Breaker
 
   @typedoc """
@@ -126,9 +126,9 @@ defmodule ExSaga.AsyncStage.Server do
   end
 
   @doc false
-  @spec run(stepper, Stepable.t(), Event.t(), Step.opts()) :: Stepable.step_result() | Stepable.stage_result()
+  @spec run(stepper, Stepable.t(), Event.t(), Step.opts()) :: Stepable.step_result() | Stepable.stage_result() | Step.mstep_result
   defp run(:mstep, stepable, event, opts) do
-    Step.mstep(stepable, event, add_async_breakpoint(opts))
+    Step.mstep_at(stepable, event, add_async_breakpoint(opts))
   end
 
   defp run(:step, stepable, event, opts) do

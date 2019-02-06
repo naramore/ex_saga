@@ -183,8 +183,16 @@ defmodule ExSaga.Stage do
   defimpl Stepable do
     alias ExSaga.Stage
 
+    def get_name(%{state: %{name: name}}, opts) do
+      parent_full_name = Keyword.get(opts, :parent_full_name, [])
+      parent_full_name ++ [name]
+    end
+    def get_name(_stepable, _opts) do
+      []
+    end
+
     def step_from(stage, {:ok, effects_so_far}, opts) do
-      full_name = Stage.get_full_name(stage, Keyword.get(opts, :parent_full_name, []))
+      full_name = Stepable.get_name(stage, opts)
 
       event =
         Event.create(
@@ -213,7 +221,7 @@ defmodule ExSaga.Stage do
     def step_from(stage, {status, reason, effects_so_far}, opts)
         when status in [:error, :abort] do
       abort? = if status == :abort, do: true, else: false
-      full_name = Stage.get_full_name(stage, Keyword.get(opts, :parent_full_name, []))
+      full_name = Stepable.get_name(stage, opts)
       effect = Utils.get_in(effects_so_far, tl(full_name))
 
       event =

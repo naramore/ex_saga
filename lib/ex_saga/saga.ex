@@ -32,7 +32,7 @@ defmodule ExSaga.Saga do
   @spec update_opts(t, Stepable.opts()) :: Stepable.opts()
   def update_opts(saga, opts) do
     %{state: %{hooks: hooks, on_retry: on_retry}} = saga
-    full_name = Stage.get_full_name(saga, Keyword.get(opts, :parent_full_name, []))
+    full_name = Stepable.get_name(saga, opts)
     retry_updates = Keyword.get(opts, :retry_updates, [])
 
     additional_hooks =
@@ -45,11 +45,11 @@ defmodule ExSaga.Saga do
         {h, Keyword.update!(hopts, :cascade_depth, fn cd -> cd - 1 end)}
       end)
 
-    Keyword.merge(opts,
+    Keyword.merge(opts, [
       parent_full_name: full_name,
       extra_hooks: additional_hooks,
       retry_updates: [{full_name, on_retry} | retry_updates]
-    )
+    ])
   end
 
   @doc """
@@ -74,7 +74,7 @@ defmodule ExSaga.Saga do
 
   @doc """
   """
-  @spec execute_effects_import(t, Event.t(), Stepable.opts()) :: Event.t()
+  @spec execute_compensation(t, Event.t(), Stepable.opts()) :: Event.t()
   def execute_compensation(saga, event, opts \\ []) do
     %{state: %{effects_so_far: effects_so_far, reason: reason}} = saga
     opts = DryRun.from_stepable(event, opts, :ok)
@@ -258,9 +258,17 @@ defmodule ExSaga.Saga do
   defimpl Stepable do
     alias ExSaga.Saga
 
+    def get_name(%{state: %{name: name}}, opts) do
+      parent_full_name = Keyword.get(opts, :parent_full_name, [])
+      parent_full_name ++ [name]
+    end
+    def get_name(_stepable, _opts) do
+      []
+    end
+
     # TODO: add support for effects importer
     def step_from(saga, {:ok, effects_so_far}, opts) do
-      full_name = Stage.get_full_name(saga, Keyword.get(opts, :parent_full_name, []))
+      full_name = Stepable.get_name(saga, opts)
 
       event =
         Event.create(
@@ -289,7 +297,7 @@ defmodule ExSaga.Saga do
     def step_from(saga, {status, reason, effects_so_far}, opts)
         when status in [:error, :abort] do
       abort? = if status == :abort, do: true, else: false
-      full_name = Stage.get_full_name(saga, Keyword.get(opts, :parent_full_name, []))
+      full_name = Stepable.get_name(saga, opts)
 
       event =
         Event.create(

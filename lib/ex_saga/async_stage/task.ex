@@ -2,6 +2,8 @@ defmodule ExSaga.AsyncStage.Task do
   @moduledoc """
   """
 
+  alias ExSaga.{AsyncStage, Stage, Stepable}
+
   @typedoc """
   """
   @type status ::

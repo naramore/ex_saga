@@ -2,7 +2,7 @@ defmodule ExSaga.Step do
   @moduledoc """
   """
 
-  alias ExSaga.{DryRun, Stepable}
+  alias ExSaga.{DryRun, Event, Stepable}
 
   @typedoc """
   """
@@ -101,7 +101,7 @@ defmodule ExSaga.Step do
 
   @doc """
   """
-  @spec break?([breakpoint_fun] | breakpoint_fun, Steable.t(), Event.t(), timeout) :: boolean
+  @spec break?([breakpoint_fun] | breakpoint_fun, Stepable.t(), Event.t(), timeout) :: boolean
   def break?([], _stepable, _event, _timeout), do: false
 
   def break?([bp | bps], stepable, event, timeout) do

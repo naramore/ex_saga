@@ -2,7 +2,7 @@ defmodule ExSaga.Stepper do
   @moduledoc """
   """
 
-  alias ExSaga.{ErrorHandler, Event, Hook, Retry, State, Stepable}
+  alias ExSaga.{ErrorHandler, Event, Hook, Retry, Stage, State, Stepable}
 
   @doc """
   """

@@ -2,17 +2,18 @@ defmodule ExSaga.Retry do
   @moduledoc """
   """
 
-  alias ExSaga.{DryRun, Event, Hook, Stage, Step}
+  alias ExSaga.{DryRun, Event, Hook, Stage, Step, Stepable}
 
   @typedoc """
   """
   @type accumulator :: %{
-          on_retry: module,
-          hooks_left: [Hook.t()],
-          retry_updates_left: [{Stage.full_name(), module}],
-          update: retry_result | nil,
-          effects_so_far: ExSaga.effects(),
-          abort?: boolean
+          :on_retry => module,
+          :hooks_left => [Hook.t()],
+          :retry_updates_left => [{Stage.full_name(), module}],
+          :update => retry_result | nil,
+          :effects_so_far => Stage.effects(),
+          :abort? => boolean,
+          optional(term) => term
         }
 
   @typedoc """
@@ -94,13 +95,13 @@ defmodule ExSaga.Retry do
   end
 
   @doc false
-  @spec get_retry_state(ExSaga.effects(), module, ExSaga.full_name()) :: retry_state
+  @spec get_retry_state(Stage.effects(), module, Stage.full_name()) :: retry_state
   defp get_retry_state(effects_so_far, mod, name) do
     get_in(effects_so_far, get_retry_state_path(mod, name))
   end
 
   @doc false
-  @spec update_retry_state(ExSaga.effects(), module, ExSaga.full_name(), retry_state) :: ExSaga.effects()
+  @spec update_retry_state(Stage.effects(), module, Stage.full_name(), retry_state) :: Stage.effects()
   defp update_retry_state(%{__retry__: retry_states} = effects_so_far, mod, name, retry_state)
        when is_map(retry_states) do
     put_in(effects_so_far, get_retry_state_path(mod, name), retry_state)
@@ -112,7 +113,7 @@ defmodule ExSaga.Retry do
   end
 
   @doc false
-  @spec get_retry_state_path(module, ExSaga.full_name()) :: retry_state
+  @spec get_retry_state_path(module, Stage.full_name()) :: retry_state
   defp get_retry_state_path(mod, name) do
     if mod.shared_state?() do
       [:__retry__, mod]
@@ -261,7 +262,7 @@ defmodule ExSaga.Retry do
   end
 
   @doc false
-  @spec execute_retry_init(accumulator, Event.t(), Stepable.opts()) :: {:ok, retry_state} | {:error, reason :: term}
+  @spec execute_retry_init(accumulator, Event.t(), Stepable.opts()) :: Event.t()
   defp execute_retry_init(acc, event, opts) do
     retry_handler = Map.get(acc, :on_retry)
     opts = DryRun.from_stepable(event, opts, {:ok, nil})
@@ -279,7 +280,7 @@ defmodule ExSaga.Retry do
   end
 
   @doc false
-  @spec execute_retry_handler(accumulator, Event.t(), Stepable.opts()) :: retry_result | {:error, reason :: term}
+  @spec execute_retry_handler(accumulator, Event.t(), Stepable.opts()) :: Event.t()
   defp execute_retry_handler(acc, event, opts) do
     {retry_state, retry_opts} = event.context
     retry_handler = Map.get(acc, :on_retry)
@@ -299,7 +300,7 @@ defmodule ExSaga.Retry do
   end
 
   @doc false
-  @spec execute_retry_update(accumulator, Event.t(), Stepable.opts()) :: update_result | {:error, reason :: term}
+  @spec execute_retry_update(accumulator, Event.t(), Stepable.opts()) :: Event.t()
   defp execute_retry_update(acc, event, opts) do
     {path, retry, retry_result} = event.context
     %{effects_so_far: effects_so_far} = acc

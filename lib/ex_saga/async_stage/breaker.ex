@@ -93,7 +93,7 @@ defmodule ExSaga.AsyncStage.Breaker do
   end
 
   @doc false
-  @spec update(reference, name :: term, boolean) :: :ok
+  @spec update(atom | :ets.tid, name :: term, boolean) :: :ok
   defp update(table, name, value) do
     _ =
       unless :ets.update_element(table, name, [{1, value}]) do
