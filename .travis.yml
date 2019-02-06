@@ -33,7 +33,7 @@ jobs:
     - name: inch-ci
       script:
         - MIX_ENV=docs mix deps.get
-        - MIX_ENV=docs mix inch.report
+        - MIX_ENV=docs mix inch
 stages:
   - build
   - test

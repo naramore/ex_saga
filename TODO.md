@@ -26,7 +26,7 @@
     - [ ] ExSaga.*Error
     - [ ] change ExSaga.Utils.get_local_metadata/1 -> macro in order to auto-import env
     - [ ] refactor tests to not use generated functions (e.g. transaction, compensation)
-    - [ ] mstep/3, opts, breakpoint -> breakpoints
+    - [x] mstep/3, opts, breakpoint -> breakpoints
     - [ ] step / mstep async? breakpoints? resuming? (maybe, add mstep to Stepable protocol and use default mstep for stage, feedback, saga, and mstep_async for aysnc and mapper stages... *OR* AsyncStage.Supervisor + AsyncStage.Server w/ mstep/4, step/4, pause/1)
     - [x] change `[:starting, :stage, _] -> [:starting, _]`
     - [x] encapsulate all the hook, retry, and error handler specific state on `ExSaga.Stage` into its own struct
@@ -37,6 +37,7 @@
     - [x] refactor out the hook, retry, error handler and other default step implementations into a reuseable function
     - [ ] move *specific* event generators into a new module (e.g. `ExSaga.EventGenerators`)
     - [ ] add stage name to event.name for `ExSaga.Saga`
+    - [x] refactor wait server and breaker to use ETS
 - [ ] ExSaga.UI
     - [ ] worker pool for stage executions
     - [ ] Phoenix + Absinthe + Elm?
@@ -84,15 +85,3 @@
     - [ ] persistant storage?
     - [ ] hooks (e.g. metrics and persistence)
     - [ ] [Connection Draining](https://medium.com/@derek.kraan2/implementing-connection-draining-for-phoenix-or-any-library-that-uses-ranch-8e640f3bd4cf)
-- [ ] property-based testing
-    - [ ] clojure's test.check
-    - [ ] Erlang PropEr / Elixir PropCheck
-    - [ ] Elixir StreamData (especially Enumerable protocol for generators)
-    - [ ] EQC's PULSE
-- [ ] data specs / schemas / contracts (i.e. clojure.spec)
-    - [ ] specifies structure
-    - [ ] validates
-    - [ ] destructures
-    - [ ] generates (i.e. integrates with property-based testing: PropCheck, StreamData)
-    - [ ] fully qualified atom as sigil? (e.g. `~a[foo]` -> :"Elixir.Module.Path.foo" or {module, atom})
-    - [ ] dialyzer integration
