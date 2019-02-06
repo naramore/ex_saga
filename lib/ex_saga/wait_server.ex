@@ -30,17 +30,22 @@ defmodule ExSaga.WaitServer do
 
   @impl GenServer
   def init(_) do
-    {:ok, %{}}
+    table = :ets.new(:wait_table, [:protected, :set])
+    {:ok, table}
   end
 
   @impl GenServer
-  def handle_call({:maybe_wait, id}, _from, state) do
-    case get_wait(state, id) do
-      nil -> {:reply, {:error, {:id_not_found, id}}, state}
-      0 -> {:reply, :ok, Map.delete(state, id)}
+  def handle_call({:maybe_wait, id}, _from, table) do
+    case get_wait(table, id) do
+      nil ->
+        {:reply, {:error, {:id_not_found, id}}, table}
+      0 ->
+        _ = :ets.delete(table, id)
+        {:reply, :ok, table}
       wait_ms ->
         _ = :timer.sleep(wait_ms)
-        {:reply, :ok, Map.delete(state, id)}
+        _ = :ets.delete(table, id)
+        {:reply, :ok, table}
     end
   end
   def handle_call(_request, _from, state) do
@@ -48,8 +53,9 @@ defmodule ExSaga.WaitServer do
   end
 
   @impl GenServer
-  def handle_cast({:wait, id, wait, datetime}, state) do
-    {:noreply, Map.put(state, id, {wait, datetime})}
+  def handle_cast({:wait, id, wait, datetime}, table) do
+    _ = :ets.insert(table, {id, wait, datetime})
+    {:noreply, table}
   end
   def handle_cast(_request, state) do
     {:noreply, state}
@@ -61,10 +67,10 @@ defmodule ExSaga.WaitServer do
   end
 
   @doc false
-  @spec get_wait(map, Stage.full_name, DateTime.t) :: non_neg_integer | nil
-  defp get_wait(state, id, now \\ DateTime.utc_now()) do
-    case Map.get(state, id) do
-      {{time, unit}, %DateTime{} = then} ->
+  @spec get_wait(reference, Stage.full_name, DateTime.t) :: non_neg_integer | nil
+  defp get_wait(table, id, now \\ DateTime.utc_now()) do
+    case :ets.lookup(table, id) do
+      [{^id, {time, unit}, %DateTime{} = then}|_] ->
         wait_ms = System.convert_time_unit(time, unit, @time_unit)
         diff = DateTime.diff(now, then, @time_unit)
         diff_to_wait(wait_ms - diff)
