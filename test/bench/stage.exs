@@ -12,7 +12,7 @@ defmodule ExSaga.Bench.Stage do
       transaction: &__MODULE__.transaction/1,
       compensation: &__MODULE__.compensation/3,
       on_retry: ExSaga.Bench.Retry,
-      on_error: ExSaga.Bench.ErrorHandler,
+      on_error: ExSaga.Bench.ErrorHandler
     }
   end
 
@@ -42,7 +42,7 @@ defmodule ExSaga.Bench.Stage do
       transaction: &__MODULE__.error_transaction/1,
       compensation: &__MODULE__.compensation/3,
       on_retry: ExSaga.Bench.Retry,
-      on_error: ExSaga.Bench.ErrorHandler,
+      on_error: ExSaga.Bench.ErrorHandler
     }
   end
 
@@ -60,7 +60,7 @@ defmodule ExSaga.Bench.Stage do
       transaction: &__MODULE__.error_transaction/1,
       compensation: &__MODULE__.retry_compensation/3,
       on_retry: ExSaga.Bench.Retry,
-      on_error: ExSaga.Bench.ErrorHandler,
+      on_error: ExSaga.Bench.ErrorHandler
     }
   end
 end
@@ -76,6 +76,7 @@ defmodule ExSaga.Bench.Retry do
 
   def handle_retry({c, l}, _retry_opts) when c >= l,
     do: {:noretry, {c, l}}
+
   def handle_retry({c, l}, _retry_opts),
     do: {:retry, 0, {c + 1, l}}
 
@@ -94,6 +95,7 @@ defmodule ExSaga.Bench.ErrorHandler do
 end
 
 map_fun = fn i -> [i, i + 1] end
+
 inputs = %{
   "Tiny (1 hundred)" => Enum.to_list(1..100),
   "Small (1 Thousand)" => Enum.to_list(1..1_000),
@@ -102,12 +104,18 @@ inputs = %{
 }
 
 opts = [time: 15, warmup: 5, inputs: inputs, memory_time: 2]
-Benchee.run(%{
-  "flat_map"    => fn inputs -> Enum.flat_map(inputs, map_fun) end,
-  "map.flatten" => fn inputs -> inputs |> Enum.map(map_fun) |> List.flatten end,
-  "stage-successful" => &ExSaga.Bench.run/1,
-  "stage-successful-with-hook" => &ExSaga.Bench.run(&1, extra_hooks: [ExSaga.Bench.hook()]),
-  "stage-unsuccessful" => &ExSaga.Bench.run(&1, stage: ExSaga.Bench.error_stage()),
-  "stage-unsuccessful-with-hook" => &ExSaga.Bench.run(&1, stage: ExSaga.Bench.error_stage(), extra_hooks: [ExSaga.Bench.hook()]),
-  "stage-unsuccessful-after-retries" => &ExSaga.Bench.run(&1, stage: ExSaga.Bench.retry_stage(), extra_hooks: [ExSaga.Bench.hook()]),
-}, opts)
+
+Benchee.run(
+  %{
+    "flat_map" => fn inputs -> Enum.flat_map(inputs, map_fun) end,
+    "map.flatten" => fn inputs -> inputs |> Enum.map(map_fun) |> List.flatten() end,
+    "stage-successful" => &ExSaga.Bench.run/1,
+    "stage-successful-with-hook" => &ExSaga.Bench.run(&1, extra_hooks: [ExSaga.Bench.hook()]),
+    "stage-unsuccessful" => &ExSaga.Bench.run(&1, stage: ExSaga.Bench.error_stage()),
+    "stage-unsuccessful-with-hook" =>
+      &ExSaga.Bench.run(&1, stage: ExSaga.Bench.error_stage(), extra_hooks: [ExSaga.Bench.hook()]),
+    "stage-unsuccessful-after-retries" =>
+      &ExSaga.Bench.run(&1, stage: ExSaga.Bench.retry_stage(), extra_hooks: [ExSaga.Bench.hook()])
+  },
+  opts
+)

@@ -7,10 +7,13 @@ defmodule ExSaga.Generators do
 
   def no_overlapping_hook_names(opts \\ []) do
     bind(uniq_list_of(atom(:alphanumeric), opts), fn
-      [] -> constant({[], []})
+      [] ->
+        constant({[], []})
+
       ns ->
         bind(integer(0..Enum.count(ns)), fn i ->
           {hns, ehns} = Enum.split(ns, i)
+
           bind(
             tuple({
               list_of(hook(), length: Enum.count(hns)),
@@ -19,7 +22,8 @@ defmodule ExSaga.Generators do
             fn {hs, ehs} ->
               constant({
                 Enum.zip(hns, hs) |> Enum.map(fn {n, h} -> %{h | name: n} end),
-                Enum.zip(ehns, ehs) |> Enum.map(fn
+                Enum.zip(ehns, ehs)
+                |> Enum.map(fn
                   {n, {h, o}} -> {%{h | name: n}, o}
                   {n, h} -> %{h | name: n}
                 end)
@@ -34,7 +38,7 @@ defmodule ExSaga.Generators do
 
   def executable_stepable(opts \\ []) do
     one_of([
-      executable_stage(opts),
+      executable_stage(opts)
     ])
   end
 
@@ -47,44 +51,53 @@ defmodule ExSaga.Generators do
   end
 
   def executable_event(stage_type, event_name, opts \\ [])
+
   def executable_event(TestStage, [:starting, :stage, :transaction], opts) do
     gen all event <- event(),
             context <- effects(opts) do
-      %{event | name: [:starting, :stage, :transaction],
-                context: context,
-                module: TestStage}
+      %{event | name: [:starting, :stage, :transaction], context: context, module: TestStage}
     end
   end
+
   def executable_event(TestStage, [:completed, :stage, :transaction], _opts) do
   end
+
   def executable_event(TestStage, [:starting, :stage, :compensation], _opts) do
   end
+
   def executable_event(TestStage, [:completed, :stage, :compensation], _opts) do
   end
+
   def executable_event(TestStage, [_, :hook, _] = _event_name, _opts) do
   end
+
   def executable_event(TestStage, [_, :retry, _] = _event_name, _opts) do
   end
+
   def executable_event(TestStage, [_, :error_handler] = _event_name, _opts) do
   end
 
   def executable_events(TestStage, opts \\ []) do
-    gen all event_names <- list_of(member_of([
-      [:starting, :stage, :transaction],
-      [:completed, :stage, :transaction],
-      [:starting, :stage, :compensation],
-      [:completed, :stage, :compensation],
-      [:skipped, :hook, :log_event],
-      [:completed, :hook, :log_event],
-      [:starting, :retry, :init],
-      [:completed, :retry, :init],
-      [:starting, :retry, :handler],
-      [:completed, :retry, :handler],
-      [:starting, :retry, :update],
-      [:completed, :retry, :update],
-      [:starting, :error_handler],
-      [:completed, :error_handler],
-    ]), opts) do
+    gen all event_names <-
+              list_of(
+                member_of([
+                  [:starting, :stage, :transaction],
+                  [:completed, :stage, :transaction],
+                  [:starting, :stage, :compensation],
+                  [:completed, :stage, :compensation],
+                  [:skipped, :hook, :log_event],
+                  [:completed, :hook, :log_event],
+                  [:starting, :retry, :init],
+                  [:completed, :retry, :init],
+                  [:starting, :retry, :handler],
+                  [:completed, :retry, :handler],
+                  [:starting, :retry, :update],
+                  [:completed, :retry, :update],
+                  [:starting, :error_handler],
+                  [:completed, :error_handler]
+                ]),
+                opts
+              ) do
       Enum.map(event_names, fn en ->
         executable_event(TestStage, en, opts)
       end)
@@ -102,14 +115,18 @@ defmodule ExSaga.Generators do
   def executable_stage(opts \\ []) do
     executable = TestStage.create()
     ub = executable.hooks |> Enum.count()
+
     gen all stg <- stage(opts),
             n <- integer(0..ub) do
-      %{stg | name: executable.name,
-              transaction: executable.transaction,
-              compensation: executable.compensation,
-              hooks: Enum.take(executable.hooks, n),
-              on_retry: executable.on_retry,
-              on_error: executable.on_error}
+      %{
+        stg
+        | name: executable.name,
+          transaction: executable.transaction,
+          compensation: executable.compensation,
+          hooks: Enum.take(executable.hooks, n),
+          on_retry: executable.on_retry,
+          on_error: executable.on_error
+      }
     end
   end
 
@@ -127,7 +144,7 @@ defmodule ExSaga.Generators do
       %ExSaga.Stage{
         transaction: transaction,
         compensation: compensation,
-        state: state,
+        state: state
       }
     end
   end
@@ -165,19 +182,27 @@ defmodule ExSaga.Generators do
   def name(), do: atom(:alphanumeric)
 
   def transaction(opts \\ []) do
-    function1(effects(opts), one_of([
-      tuple({constant(:ok), effect()}),
-      tuple({member_of([:error, :abort]), reason()})
-    ]))
+    function1(
+      effects(opts),
+      one_of([
+        tuple({constant(:ok), effect()}),
+        tuple({member_of([:error, :abort]), reason()})
+      ])
+    )
   end
 
   def compensation(opts \\ []) do
-    function3(reason(), effect(), effects(opts), one_of([
-      constant(:ok),
-      constant(:abort),
-      tuple({constant(:retry), retry_opts(opts)}),
-      tuple({constant(:continue), effect()})
-    ]))
+    function3(
+      reason(),
+      effect(),
+      effects(opts),
+      one_of([
+        constant(:ok),
+        constant(:abort),
+        tuple({constant(:retry), retry_opts(opts)}),
+        tuple({constant(:continue), effect()})
+      ])
+    )
   end
 
   # Hooks
@@ -234,17 +259,20 @@ defmodule ExSaga.Generators do
   end
 
   def extra_hooks(opts \\ []) do
-    list_of(one_of([
-      hook(),
-      tuple({hook(), hook_opts()})
-    ]), opts)
+    list_of(
+      one_of([
+        hook(),
+        tuple({hook(), hook_opts()})
+      ]),
+      opts
+    )
   end
 
   def extra_hooks_with_overrides(names, opts \\ []) do
     gen all name <- member_of(names),
             hook <- hook(),
             extra_hooks <- extra_hooks(opts) do
-      [{%{hook | name: name}, [override: true]}|extra_hooks]
+      [{%{hook | name: name}, [override: true]} | extra_hooks]
     end
   end
 
@@ -364,10 +392,12 @@ defmodule ExSaga.Generators do
 
   defp decimal_precision(num) do
     digits = Integer.digits(num)
-    trailing_zeros = digits
-    |> Enum.reverse()
-    |> Enum.take_while(fn x -> x == 0 end)
-    |> Enum.count()
+
+    trailing_zeros =
+      digits
+      |> Enum.reverse()
+      |> Enum.take_while(fn x -> x == 0 end)
+      |> Enum.count()
 
     Enum.count(digits) - trailing_zeros
   end
@@ -451,22 +481,21 @@ defmodule ExSaga.Generators do
             hooks_left <- list_of(hook(), opts),
             effects_so_far <- effects(opts),
             reason <- reason() do
-              %{
-                on_error: on_error,
-                hooks: hooks,
-                hooks_left: hooks_left,
-                effects_so_far: effects_so_far,
-                reason: reason
-              }
-            end
+      %{
+        on_error: on_error,
+        hooks: hooks,
+        hooks_left: hooks_left,
+        effects_so_far: effects_so_far,
+        reason: reason
+      }
+    end
   end
 
   def error_handler_event(opts \\ []) do
     gen all event <- event(),
             {name, context} <- error_handler_event_context(opts) do
-              %{event | name: name,
-                        context: context}
-            end
+      %{event | name: name, context: context}
+    end
   end
 
   def error_handler_event_context(opts \\ []) do
@@ -495,7 +524,7 @@ defmodule ExSaga.Generators do
       tuple({constant(:ok), simple()}),
       tuple({constant(:raise), reason(), stacktrace()}),
       tuple({constant(:throw), reason()}),
-      tuple({constant(:exit), simple()}),
+      tuple({constant(:exit), simple()})
     ])
   end
 

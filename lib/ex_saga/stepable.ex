@@ -7,13 +7,14 @@ defprotocol ExSaga.Stepable do
   @typedoc """
   """
   @type opt ::
-    {:id, Stage.id} |
-    {:dry_run?, boolean} |
-    {:dry_run_result, term} |
-    {:timeout, timeout} |
-    {:extra_hooks, [Hook.t | {Hook.t, Hook.opts}]} |
-    {:retry_updates, [{Stage.full_name, module}]} |  # TODO: auto-gen these from full_name?
-    {:parent_full_name, Stage.full_name}
+          {:id, Stage.id()}
+          | {:dry_run?, boolean}
+          | {:dry_run_result, term}
+          | {:timeout, timeout}
+          | {:extra_hooks, [Hook.t() | {Hook.t(), Hook.opts()}]}
+          # TODO: auto-gen these from full_name?
+          | {:retry_updates, [{Stage.full_name(), module}]}
+          | {:parent_full_name, Stage.full_name()}
 
   @typedoc """
   """
@@ -22,12 +23,12 @@ defprotocol ExSaga.Stepable do
   @typedoc """
   """
   @type stage_result ::
-    {:ok, Stage.effects} |
-    {:error | :abort, reason :: term, Stage.effects}
+          {:ok, Stage.effects()}
+          | {:error | :abort, reason :: term, Stage.effects()}
 
   @typedoc """
   """
-  @type step_result :: {:continue, Event.t | nil, t}
+  @type step_result :: {:continue, Event.t() | nil, t}
 
   @doc """
   """
@@ -36,6 +37,6 @@ defprotocol ExSaga.Stepable do
 
   @doc """
   """
-  @spec step(t, Event.t, opts) :: step_result | stage_result
+  @spec step(t, Event.t(), opts) :: step_result | stage_result
   def step(stepable, event, opts \\ [])
 end

@@ -13,7 +13,7 @@ defmodule ExSaga.Supervisor do
   use Supervisor
 
   @doc false
-  @spec start_link(GenServer.options) :: Supervisor.on_start
+  @spec start_link(GenServer.options()) :: Supervisor.on_start()
   def start_link(opts \\ []) do
     Supervisor.start_link(__MODULE__, :ok, Keyword.merge([name: __MODULE__], opts))
   end
@@ -24,8 +24,9 @@ defmodule ExSaga.Supervisor do
       {Task.Supervisor, name: ExSaga.TaskSupervisor},
       {ExSaga.WaitServer, name: ExSaga.WaitServer},
       {ExSaga.AsyncStage.Supervisor, name: ExSaga.AsyncStage.Supervisor},
-      {ExSaga.AsyncStage.Breaker, name: ExSaga.AsyncStage.Breaker},
+      {ExSaga.AsyncStage.Breaker, name: ExSaga.AsyncStage.Breaker}
     ]
+
     Supervisor.init(children, strategy: :one_for_one)
   end
 end

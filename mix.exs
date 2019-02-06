@@ -29,7 +29,7 @@ defmodule ExSaga.MixProject do
       # Custom testing
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [coveralls: :test, "coveralls.detail": :test, "coveralls.travis": :test],
-      dialyzer: [ignore_warnings: ".dialyzer_ignore.exs"],
+      dialyzer: [ignore_warnings: ".dialyzer_ignore.exs"]
     ]
   end
 
@@ -37,7 +37,7 @@ defmodule ExSaga.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ExSaga.Application, []},
+      mod: {ExSaga.Application, []}
     ]
   end
 
@@ -56,7 +56,7 @@ defmodule ExSaga.MixProject do
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
       {:stream_data, "~> 0.4", only: [:dev, :test]},
       {:benchee, "~> 0.13", only: :test},
-      {:excoveralls, "~> 0.10", only: [:dev, :test]},
+      {:excoveralls, "~> 0.10", only: [:dev, :test]}
     ]
   end
 
@@ -69,7 +69,7 @@ defmodule ExSaga.MixProject do
       source_ref: "v#{@version}",
       links: %{
         github: "https://github.com/naramore/ex_saga"
-      },
+      }
     ]
   end
 
@@ -79,7 +79,7 @@ defmodule ExSaga.MixProject do
       source_ref: "v#{@version}",
       homepage_url: "https://github.com/naramore/ex_saga",
       source_url: "https://github.com/naramore/ex_saga",
-      extras: ["README.md", "CHANGELOG.md"],
+      extras: ["README.md", "CHANGELOG.md"]
     ]
   end
 
@@ -87,4 +87,3 @@ defmodule ExSaga.MixProject do
     []
   end
 end
-

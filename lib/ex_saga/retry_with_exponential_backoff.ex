@@ -7,11 +7,12 @@ defmodule ExSaga.RetryWithExpoentialBackoff do
 
   @typedoc """
   """
-  @type retry_opt :: {:retry_limit, pos_integer() | nil} |
-                     {:base_backoff, pos_integer() | nil} |
-                     {:min_backoff, non_neg_integer() | nil} |
-                     {:max_backoff, pos_integer()} |
-                     {:enable_jitter, boolean()}
+  @type retry_opt ::
+          {:retry_limit, pos_integer() | nil}
+          | {:base_backoff, pos_integer() | nil}
+          | {:min_backoff, non_neg_integer() | nil}
+          | {:max_backoff, pos_integer()}
+          | {:enable_jitter, boolean()}
 
   @typedoc """
   """
@@ -29,6 +30,7 @@ defmodule ExSaga.RetryWithExpoentialBackoff do
   @impl ExSaga.Retry
   def handle_retry(count, opts) do
     parsed_opts = parse_opts(opts)
+
     case retry(count, parsed_opts) do
       {nil, state} -> {:noretry, state}
       {wait, state} -> {:retry, wait, state}
@@ -37,14 +39,16 @@ defmodule ExSaga.RetryWithExpoentialBackoff do
 
   @doc """
   """
-  @spec retry(Retry.retry_state, parsed_retry) :: {pos_integer | nil, Retry.retry_state}
+  @spec retry(Retry.retry_state(), parsed_retry) :: {pos_integer | nil, Retry.retry_state()}
   def retry(count, {nil, _base, _max, _jitter?}),
     do: {nil, count + 1}
+
   def retry(count, {limit, base, max, jitter?})
-    when limit > count do
-      backoff = get_backoff(count, base, max, jitter?)
-      {backoff, count + 1}
+      when limit > count do
+    backoff = get_backoff(count, base, max, jitter?)
+    {backoff, count + 1}
   end
+
   def retry(count, _parsed_opts),
     do: {nil, count + 1}
 
@@ -62,19 +66,22 @@ defmodule ExSaga.RetryWithExpoentialBackoff do
   @doc false
   @spec get_backoff(pos_integer, pos_integer | nil, pos_integer, boolean) :: non_neg_integer
   defp get_backoff(_count, nil, _max_backoff, _jitter_enabled?), do: 0
+
   defp get_backoff(count, base_backoff, max_backoff, true)
-    when is_integer(base_backoff) and base_backoff >= 1 and
-         is_integer(max_backoff) and max_backoff >= 1,
-      do: random(calculate_backoff(count, base_backoff, max_backoff))
+       when is_integer(base_backoff) and base_backoff >= 1 and is_integer(max_backoff) and max_backoff >= 1,
+       do: random(calculate_backoff(count, base_backoff, max_backoff))
+
   defp get_backoff(count, base_backoff, max_backoff, _jitter_enabled?)
-    when is_integer(base_backoff) and base_backoff >= 1 and
-         is_integer(max_backoff) and max_backoff >= 1,
-      do: calculate_backoff(count, base_backoff, max_backoff)
+       when is_integer(base_backoff) and base_backoff >= 1 and is_integer(max_backoff) and max_backoff >= 1,
+       do: calculate_backoff(count, base_backoff, max_backoff)
+
   defp get_backoff(_count, base_backoff, max_backoff, _jitter_enabled?) do
-    _ = Logger.warn(fn ->
-      "Ignoring retry backoff options, expected base_backoff and max_backoff to be integer and >= 1, got: " <>
-        "base_backoff: #{inspect(base_backoff)}, max_backoff: #{inspect(max_backoff)}"
-    end)
+    _ =
+      Logger.warn(fn ->
+        "Ignoring retry backoff options, expected base_backoff and max_backoff to be integer and >= 1, got: " <>
+          "base_backoff: #{inspect(base_backoff)}, max_backoff: #{inspect(max_backoff)}"
+      end)
+
     0
   end
 

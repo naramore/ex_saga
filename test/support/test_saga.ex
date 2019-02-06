@@ -9,7 +9,7 @@ defmodule ExSaga.TestSaga do
         TestStage.create(:a),
         TestStage.create(:b),
         TestStage.create(:c),
-        TestStage.create(:d),
+        TestStage.create(:d)
       ],
       compensation: compensation(name),
       state: %State{

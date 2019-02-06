@@ -9,12 +9,13 @@ defmodule ExSaga.TestStage do
 
   # TODO: update to support more than 1 name given
   def test_effects(name \\ __MODULE__) do
-    gen all txn <- one_of([
-              tuple({constant(:raise), constant(%ArgumentError{})}),
-              tuple({constant(:throw), Gen.simple()}),
-              tuple({constant(:exit), atom(:alphanumeric)}),
-              tuple({member_of([:error, :abort]), atom(:alphanumeric)}),
-            ]),
+    gen all txn <-
+              one_of([
+                tuple({constant(:raise), constant(%ArgumentError{})}),
+                tuple({constant(:throw), Gen.simple()}),
+                tuple({constant(:exit), atom(:alphanumeric)}),
+                tuple({member_of([:error, :abort]), atom(:alphanumeric)})
+              ]),
             txn? <- boolean(),
             cmp <- member_of([:abort, :retry, :continue]),
             cmp? <- boolean() do
@@ -42,8 +43,8 @@ defmodule ExSaga.TestStage do
   def transaction(name) do
     fn
       %{txn: %{^name => {:raise, error}}} -> raise error
-      %{txn: %{^name => {:throw, value}}} -> throw value
-      %{txn: %{^name => {:exit, reason}}} -> exit reason
+      %{txn: %{^name => {:throw, value}}} -> throw(value)
+      %{txn: %{^name => {:exit, reason}}} -> exit(reason)
       %{txn: %{^name => {status, reason}}} -> {status, reason}
       _ -> {:ok, :success!}
     end
@@ -92,9 +93,10 @@ defmodule ExSaga.TestStage do
 
     @impl ExSaga.Retry
     def handle_retry(count, _retry_opts)
-      when count < @limit do
-        {:retry, {0, :millisecond}, count + 1}
+        when count < @limit do
+      {:retry, {0, :millisecond}, count + 1}
     end
+
     def handle_retry(count, _retry_opts) do
       {:noretry, count}
     end
@@ -113,15 +115,19 @@ defmodule ExSaga.TestStage do
     def handle_error(_reason, %Event{name: [_, _, :compensation]}, _effects_so_far) do
       :ok
     end
+
     def handle_error(_reason, %Event{name: [_, _, :transaction]}, _effects_so_far) do
       {:ok, :fake_success!}
     end
+
     def handle_error(_reason, %Event{name: [_, :retry, :init]}, _effects_so_far) do
       {:ok, 0, []}
     end
+
     def handle_error(_reason, %Event{name: [_, :retry, :handler]}, _effects_so_far) do
       {:ok, :fake_success!}
     end
+
     def handle_error(_reason, %Event{name: [_, :retry, :update]}, _effects_so_far) do
       {:ok, :fake_success!}
     end

@@ -12,8 +12,7 @@ defmodule ExSaga.StepTest do
       check all stepable <- Gen.stepable_module(),
                 result <- Gen.executable_stepable_result(stepable, length: 0..3) do
         {resp, _} = Step.mstep_from(stepable, result, [])
-        assert (match?({:ok, %{}}, resp) or
-                match?({status, _, %{}} when status in [:error, :abort], resp))
+        assert match?({:ok, %{}}, resp) or match?({status, _, %{}} when status in [:error, :abort], resp)
       end
     end
 
@@ -23,8 +22,7 @@ defmodule ExSaga.StepTest do
                 %{__struct__: stage_type} = stepable,
                 event <- Gen.executable_event(stage_type, length: 0..3) do
         {resp, _} = Step.mstep_at(stepable, event, [])
-        assert (match?({:ok, %{}}, resp) or
-                match?({status, _, %{}} when status in [:error, :abort], resp))
+        assert match?({:ok, %{}}, resp) or match?({status, _, %{}} when status in [:error, :abort], resp)
       end
     end
 
@@ -33,8 +31,7 @@ defmodule ExSaga.StepTest do
       check all stepable <- Gen.stepable_module(),
                 events <- Gen.executable_events(stepable, length: 0..3) do
         {resp, _} = Step.mstep_after(stepable, events, [])
-        assert (match?({:ok, %{}}, resp) or
-                match?({status, _, %{}} when status in [:error, :abort], resp))
+        assert match?({:ok, %{}}, resp) or match?({status, _, %{}} when status in [:error, :abort], resp)
       end
     end
   end
