@@ -187,6 +187,7 @@ defmodule ExSaga.Stage do
       parent_full_name = Keyword.get(opts, :parent_full_name, [])
       parent_full_name ++ [name]
     end
+
     def get_name(_stepable, _opts) do
       []
     end

@@ -19,17 +19,26 @@ defmodule ExSaga.AsyncStage.Supervisor do
 
   @doc """
   """
-  @spec start_async_stage(Supervisor.supervisor(), Stepable.t, Stepable.stage_result, Stepable.opts, AsyncStage.Server.options) :: DynamicSupervisor.on_start_child()
+  @spec start_async_stage(
+          Supervisor.supervisor(),
+          Stepable.t(),
+          Stepable.stage_result(),
+          Stepable.opts(),
+          AsyncStage.Server.options()
+        ) :: DynamicSupervisor.on_start_child()
   def start_async_stage(supervisor, stepable, result, step_opts \\ [], opts \\ []) do
     DynamicSupervisor.start_child(supervisor, {AsyncStage.Server, [stepable, result, step_opts, opts]})
   end
 
   @doc """
   """
-  @spec start_async_stages(Supervisor.supervisor(), [{Stepable.t, Stepable.stage_result, Stepable.opts, AsyncStage.Server.options}]) :: [DynamicSupervisor.on_start_child()]
+  @spec start_async_stages(Supervisor.supervisor(), [
+          {Stepable.t(), Stepable.stage_result(), Stepable.opts(), AsyncStage.Server.options()}
+        ]) :: [DynamicSupervisor.on_start_child()]
   def start_async_stages(_supervisor, []), do: []
-  def start_async_stages(supervisor, [{stepable, result, step_opts, opts}|stages]) do
+
+  def start_async_stages(supervisor, [{stepable, result, step_opts, opts} | stages]) do
     resp = DynamicSupervisor.start_child(supervisor, {AsyncStage.Server, [stepable, result, step_opts, opts]})
-    [resp|start_async_stages(supervisor, stages)]
+    [resp | start_async_stages(supervisor, stages)]
   end
 end

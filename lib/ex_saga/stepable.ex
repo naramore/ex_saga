@@ -32,7 +32,7 @@ defprotocol ExSaga.Stepable do
 
   @doc """
   """
-  @spec get_name(t, opts) :: Stage.full_name
+  @spec get_name(t, opts) :: Stage.full_name()
   def get_name(stepable, opts \\ [])
 
   @doc """

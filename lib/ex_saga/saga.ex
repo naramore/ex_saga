@@ -45,11 +45,11 @@ defmodule ExSaga.Saga do
         {h, Keyword.update!(hopts, :cascade_depth, fn cd -> cd - 1 end)}
       end)
 
-    Keyword.merge(opts, [
+    Keyword.merge(opts,
       parent_full_name: full_name,
       extra_hooks: additional_hooks,
       retry_updates: [{full_name, on_retry} | retry_updates]
-    ])
+    )
   end
 
   @doc """
@@ -262,6 +262,7 @@ defmodule ExSaga.Saga do
       parent_full_name = Keyword.get(opts, :parent_full_name, [])
       parent_full_name ++ [name]
     end
+
     def get_name(_stepable, _opts) do
       []
     end

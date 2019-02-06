@@ -71,7 +71,7 @@ defmodule ExSaga.WaitServer do
   end
 
   @doc false
-  @spec get_wait(atom | :ets.tid, Stage.full_name(), DateTime.t()) :: non_neg_integer | nil
+  @spec get_wait(atom | :ets.tid(), Stage.full_name(), DateTime.t()) :: non_neg_integer | nil
   defp get_wait(table, id, now \\ DateTime.utc_now()) do
     case :ets.lookup(table, id) do
       [{^id, {time, unit}, %DateTime{} = then} | _] ->
