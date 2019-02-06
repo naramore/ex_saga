@@ -226,6 +226,7 @@ defmodule ExSaga.Saga do
       Saga.step(saga, event, opts)
     end
 
+    @doc false
     @spec initialize_stages(:transaction | :compensation, Saga.t) :: Saga.t
     defp initialize_stages(:transaction, saga) do
       %{completed_stages: completed, stages_left: left} = saga

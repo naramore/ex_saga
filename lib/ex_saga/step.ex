@@ -17,7 +17,7 @@ defmodule ExSaga.Step do
   @type opt ::
     Stepable.opt |
     {:subscribers, [Process.dest]} |
-    {:breakpoint, breakpoint_fun}
+    {:breakpoints, breakpoint_fun | [breakpoint_fun]}
 
   @typedoc """
   """
@@ -87,15 +87,23 @@ defmodule ExSaga.Step do
   """
   @spec break?(Stepable.t, Event.t, opts) :: boolean
   def break?(stepable, event, opts) do
-    with fun when not is_nil(fun) <- Keyword.get(opts, :breakpoint),
-         {timeout, _} <- Keyword.pop(opts, :timeout, :infinity),
-         result when is_boolean(result) <- DryRun.execute(
-           fun, [event, stepable], timeout
-         ) do
-      result
-    else
-      _ -> false
+    timeout = Keyword.get(opts, :timeout, :infinity)
+    breakpoints = Keyword.get(opts, :breakpoints, [])
+    break?(breakpoints, stepable, event, timeout)
+  end
+
+  @doc """
+  """
+  @spec break?([breakpoint_fun] | breakpoint_fun, Steable.t, Event.t, timeout) :: boolean
+  def break?([], _stepable, _event, _timeout), do: false
+  def break?([bp|bps], stepable, event, timeout) do
+    case DryRun.execute(bp, [], timeout) do
+      true -> true
+      _ -> break?(bps, stepable, event, timeout)
     end
+  end
+  def break?(breakpoint, stepable, event, timeout) do
+    break?([breakpoint], stepable, event, timeout)
   end
 
   @doc false

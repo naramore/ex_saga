@@ -22,6 +22,9 @@ defmodule ExSaga.Supervisor do
   def init(_) do
     children = [
       {Task.Supervisor, name: ExSaga.TaskSupervisor},
+      {ExSaga.WaitServer, name: ExSaga.WaitServer},
+      {ExSaga.AsyncStage.Supervisor, name: ExSaga.AsyncStage.Supervisor},
+      {ExSaga.AsyncStage.Breaker, name: ExSaga.AsyncStage.Breaker},
     ]
     Supervisor.init(children, strategy: :one_for_one)
   end
