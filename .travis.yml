@@ -3,7 +3,7 @@ language: elixir
 cache:
   directories:
     - deps
-    - _build/test
+    - _build
 elixir:
   - 1.7.4
 otp_release:
@@ -19,7 +19,7 @@ jobs:
       name: formatter
       script: mix format --check-formatted --dry-run
     - name: dialyzer
-      script: mix dialyzer --halt-exit-status
+      script: MIX_ENV=dev mix dialyzer --halt-exit-status
     - name: exunit
       if: branch != master
       script: mix test --trace --stale

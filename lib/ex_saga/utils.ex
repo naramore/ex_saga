@@ -7,6 +7,17 @@ defmodule ExSaga.Utils do
 
   @doc """
   """
+  @spec get_stacktrace() :: Exception.stacktrace()
+  defmacro get_stacktrace() do
+    if Version.match?(System.version(), "~> 1.7") do
+      quote do: __STACKTRACE__
+    else
+      quote do: System.stacktrace()
+    end
+  end
+
+  @doc """
+  """
   @spec get_effects(Stage.effects(), Stage.full_name()) :: Stage.effects() | Stage.effect() | nil
   def get_effects(effects, []), do: effects
 

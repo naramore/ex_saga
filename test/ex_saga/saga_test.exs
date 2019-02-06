@@ -5,7 +5,7 @@ defmodule ExSaga.SagaTest do
   import ExUnit.CaptureLog
   doctest ExSaga.Saga
 
-  alias ExSaga.{Event, Step, TestSaga}
+  alias ExSaga.{Step, TestSaga}
 
   describe "ExSaga.Stage.Stepable.step_from/3" do
     @tag :skip

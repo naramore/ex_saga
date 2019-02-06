@@ -2,6 +2,7 @@ defmodule ExSaga.DryRun do
   @moduledoc """
   """
 
+  import ExSaga.Utils, only: [get_stacktrace: 0]
   alias ExSaga.{Event, Stage, Stepable}
 
   @typedoc """
@@ -141,7 +142,7 @@ defmodule ExSaga.DryRun do
         {:ok, result} -> result
       end
     rescue
-      error -> {:error, {:raise, error, __STACKTRACE__}}
+      error -> {:error, {:raise, error, get_stacktrace()}}
     catch
       value -> {:error, {:throw, value}}
     end
