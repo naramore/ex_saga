@@ -1,12 +1,11 @@
-defmodule ExSaga.StageTest do
+defmodule ExSaga.SagaTest do
   @moduledoc false
   use ExUnit.Case, async: true
   use ExUnitProperties
   import ExUnit.CaptureLog
-  doctest ExSaga.Stage
+  doctest ExSaga.Saga
 
-  alias ExSaga.Generators, as: Gen
-  alias ExSaga.{Event, Stage, Step, Stepable, TestSaga, TestStage}
+  alias ExSaga.{Event, Step, TestSaga}
 
   describe "ExSaga.Stage.Stepable.step_from/3" do
     @tag :skip

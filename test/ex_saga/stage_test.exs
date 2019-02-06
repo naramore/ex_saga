@@ -106,7 +106,7 @@ defmodule ExSaga.StageTest do
 
     test "should return failure on the raising of an error" do
       capture_log(fn ->
-        {mstep_result, events} = Step.mstep_from(TestStage, {:ok, %{txn: {:raise, %ArgumentError{}}}}, [])
+        {mstep_result, events} = Step.mstep_from(TestStage, {:ok, %{txn: %{TestStage => {:raise, %ArgumentError{}}}}}, [])
         assert match?({:error, _, %{}}, mstep_result)
         assert Enum.count(events) == 12
         assert match?([
@@ -129,8 +129,8 @@ defmodule ExSaga.StageTest do
     test "should return failure after retry" do
       capture_log(fn ->
         {mstep_result, events} = Step.mstep_from(TestStage,
-          {:ok, %{txn: {:raise, %ArgumentError{}},
-                  cmp: :retry}}, [])
+          {:ok, %{txn: %{TestStage => {:raise, %ArgumentError{}}},
+                  cmp: %{TestStage => :retry}}}, [])
         assert match?({:error, _, %{}}, mstep_result)
         assert Enum.count(events) == 60
         assert match?([

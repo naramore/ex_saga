@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] ExSaga
+- [ ] ExSaga - 0.1.*
     - [x] implement retry logic for stages
     - [x] implement generic error handling for stages, to be called w/e a non-transaction handler is called
     - [x] implement function hooks for stage to facilitate extensibility
@@ -12,22 +12,17 @@
         - [x] accumulator + event
         - [x] stage result
     - [x] implement retry waiting for mstep via external wait gen_server (so it doesn't wait naively, executing hooks count as waiting for example)
-    - [x] tests
-    - [ ] benchmarking
+    - [ ] tests
     - [ ] implement asynchronous / parallel stage execution (with optional dependencies)
     - [ ] implement dynamic asynchronous / parallel stage generation
     - [ ] implement stage looping (in order to avoid allowing circular references)
     - [x] implement serial / pipeline stage execution (i.e. the saga)
     - [ ] composite stages must handle propagation of hook and retry state to and from their inner stages (add this to Stepable?)
     - [x] re-evaluate the usefulness-to-added-complexity-ness of ExSaga.Stepable.re_step_from/3 function
-    - [ ] implement the Inspect protocol for all stages?
-    - [ ] integrate publishing with https://github.com/beam-telemetry/telemetry
-    - [ ] add input/output spec + get_example functions to Stepable protocol
-    - [ ] ExSaga.*Error
     - [ ] change ExSaga.Utils.get_local_metadata/1 -> macro in order to auto-import env
     - [ ] refactor tests to not use generated functions (e.g. transaction, compensation)
     - [x] mstep/3, opts, breakpoint -> breakpoints
-    - [ ] step / mstep async? breakpoints? resuming? (maybe, add mstep to Stepable protocol and use default mstep for stage, feedback, saga, and mstep_async for aysnc and mapper stages... *OR* AsyncStage.Supervisor + AsyncStage.Server w/ mstep/4, step/4, pause/1)
+    - [x] step / mstep async? breakpoints? resuming? (maybe, add mstep to Stepable protocol and use default mstep for stage, feedback, saga, and mstep_async for aysnc and mapper stages... *OR* AsyncStage.Supervisor + AsyncStage.Server w/ mstep/4, step/4, pause/1)
     - [x] change `[:starting, :stage, _] -> [:starting, _]`
     - [x] encapsulate all the hook, retry, and error handler specific state on `ExSaga.Stage` into its own struct
     - [ ] re-name `ExSaga.DryRun` to Executor or some such...
@@ -38,6 +33,15 @@
     - [ ] move *specific* event generators into a new module (e.g. `ExSaga.EventGenerators`)
     - [ ] add stage name to event.name for `ExSaga.Saga`
     - [x] refactor wait server and breaker to use ETS
+- [ ] ExSaga - 0.2
+    - [ ] more tests
+    - [ ] fully documented
+    - [ ] released + hosted on hex / hexdocs
+    - [ ] benchmarking
+    - [ ] integrate publishing with https://github.com/beam-telemetry/telemetry
+    - [ ] implement the Inspect protocol for all stages?
+    - [ ] add ExSaga.*Error
+    - [ ] add (optional?) input/output spec + get_example functions to Stage implementations (maybe a behaviour?)
 - [ ] ExSaga.UI
     - [ ] worker pool for stage executions
     - [ ] Phoenix + Absinthe + Elm?
